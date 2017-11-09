@@ -23,6 +23,12 @@
         android:id="@+id/change_rgb"
         android:text="改变像素编码格式优化"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/part_load"
+        android:text="部分加载"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

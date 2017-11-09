@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +38,7 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
     private Random mRandom;
     private int mScreenWidth;
     private int mScreenHeigth;
+    private int mOffset;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.choose_picture).setOnClickListener(this);
         findViewById(R.id.button_scale).setOnClickListener(this);
         findViewById(R.id.change_rgb).setOnClickListener(this);
+        findViewById(R.id.part_load).setOnClickListener(this);
     }
 
     @Override
@@ -72,7 +76,42 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
                 changPixelRgb();
                 break;
 
+            case R.id.part_load:
+                partLoad();
+                break;
             default:break;
+        }
+    }
+
+    private void partLoad() {
+        Log.d(TAG, "partLoad: ");
+        if (mPhotoFile == null){
+            return;
+        }
+
+        try {
+            FileInputStream inputStream = new FileInputStream(mPhotoFile);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, options);
+            int pictureWidth = options.outWidth;
+            int pictureHeight = options.outHeight;
+
+            inputStream = new FileInputStream(mPhotoFile);
+            BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
+            mBitmap = decoder.decodeRegion(new Rect(
+                    (pictureWidth - mScreenWidth) / 2 + mOffset,
+                    (pictureHeight - mScreenHeigth) / 2,
+                    (pictureWidth + mScreenWidth) / 2 + mOffset,
+                    (pictureHeight + mScreenHeigth) / 2), options);
+            mImageView.setImageBitmap(mBitmap);
+            mOffset += mScreenWidth / 4;
+            if (mOffset > pictureWidth / 2){
+                mOffset = - pictureWidth / 2;
+            }
+            inputStream.close();
+        }catch (Exception e){
+            Log.d(TAG, "partLoad: ", e);
         }
     }
 
@@ -105,6 +144,7 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
             Log.d(TAG, "pictureScaleOptimize: bitmap length = " + mBitmap
                     .getByteCount());
             mImageView.setImageBitmap(mBitmap);
+            inputStream.close();
         }catch (Exception e){
             Log.d(TAG, "pictureScaleOptimize: ", e);
         }
@@ -123,6 +163,7 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
             mBitmap = BitmapFactory.decodeStream(inputStream, null, options);
             Log.d(TAG, "changPixelRgb: bitmap length = " + mBitmap.getByteCount());
             mImageView.setImageBitmap(mBitmap);
+            inputStream.close();
         }catch (Exception e){
             Log.d(TAG, "changPixelRgb: ", e);
         }
@@ -154,6 +195,7 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
             mBitmap = BitmapFactory.decodeStream(inputStream);
             Log.d(TAG, "onActivityResult: bitmap length = " + mBitmap.getByteCount());
             mImageView.setImageBitmap(mBitmap);
+            inputStream.close();
 //            GlideApp.with(this)
 //                    .asBitmap()
 //                    .load(mBitmap)
