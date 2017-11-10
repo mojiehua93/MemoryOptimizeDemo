@@ -105,9 +105,9 @@ public class OomOtimizeActivity extends AppCompatActivity implements View.OnClic
                     (pictureWidth + mScreenWidth) / 2 + mOffset,
                     (pictureHeight + mScreenHeigth) / 2), options);
             mImageView.setImageBitmap(mBitmap);
-            mOffset += mScreenWidth / 4;
-            if (mOffset > pictureWidth / 2){
-                mOffset = - pictureWidth / 2;
+            mOffset += mScreenWidth / 16;
+            if (mOffset > (pictureWidth - mScreenWidth)/ 2){
+                mOffset = - pictureWidth / 2 + mScreenWidth / 2;
             }
             inputStream.close();
         }catch (Exception e){
