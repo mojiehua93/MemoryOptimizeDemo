@@ -40,7 +40,7 @@ public class CustomMemoryCache {
         }
     }
 
-    public void getBitmap(Bitmap bitmap, String id){
+    public void putBitmap(Bitmap bitmap, String id){
         try {
             if (cacheMap.containsKey(id)){
                 currentSize -= getSizeInBytes(bitmap);
@@ -49,7 +49,7 @@ public class CustomMemoryCache {
             currentSize += getSizeInBytes(bitmap);
             checkSize();
         }catch (Exception e){
-            Log.d(TAG, "getBitmap: ", e);
+            Log.d(TAG, "putBitmap: ", e);
         }
     }
 
